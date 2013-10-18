@@ -16,38 +16,44 @@ let img2grey img dst w h =
 
 (* Binarisation de l'image (noir et blanc) *)
 let img2bin img dst w h = 
-let seuil = ref 0. and
+  let seuil = ref 0. and
       level (r,g,b) = int_of_float 
-    (0.299 *. float_of_int r +. 0.587 *. float_of_int g +. 0.114 *. float_of_int b) in
+    (0.299 *. float_of_int r +.
+       0.587 *. float_of_int g +.
+       0.114 *. float_of_int b) in
   for y0 = 0 to h-1 do
     for x0 = 0 to w-1 do
-       let average = ref 0. and
-	   sqrt_average = ref 0. and
-	   variance = ref 0. and
-	   sigma = ref 0. in
-       for i = -1 to 1 do
-	 for j = -1 to 1 do
-	   if not ((x0+j) < 0 || (x0+j) > (w-1) || 
-		       (y0+i) < 0 || (y0+i) > (h-1)) then
-	     begin
-	       let current_pix = level (Sdlvideo.get_pixel_color img (x0+j) (y0+i)) in
-	       average := !average +. (float_of_int current_pix);
-	       sqrt_average := !sqrt_average +. (float (current_pix * current_pix));
-	     end	   
-	 done
-       done;
-       average := !average /. 9.;
-       sqrt_average := !sqrt_average /. 9.;
-       variance := !sqrt_average -. !average *. !average;
-       sigma := sqrt !variance; 
-       seuil := (!average *. (1. +. 0.1 *. ((!sigma /. 140.) -. 1.)));
-	 if (level (Sdlvideo.get_pixel_color img x0 y0) < (int_of_float !seuil)) then
-	   Sdlvideo.put_pixel_color dst x0 y0 (0,0,0)
-	 else
-	   Sdlvideo.put_pixel_color dst x0 y0 (255,255,255)
+      let average = ref 0. and
+	  sqrt_average = ref 0. and
+	  variance = ref 0. and
+	  sigma = ref 0. in
+      for i = -1 to 1 do
+	for j = -1 to 1 do
+	  if not ((x0+j) < 0 || (x0+j) > (w-1) || 
+		     (y0+i) < 0 || (y0+i) > (h-1)) then
+	    begin
+	      let current_pix = level 
+		(Sdlvideo.get_pixel_color img (x0+j) (y0+i)) in
+	      average := !average +. (float_of_int current_pix);
+	      sqrt_average := !sqrt_average +. 
+		(float (current_pix * current_pix));
+	    end	   
+	done
+      done;
+      average := !average /. 9.;
+      sqrt_average := !sqrt_average /. 9.;
+      variance := !sqrt_average -. !average *. !average;
+      sigma := sqrt !variance; 
+      seuil := (!average *. (1. +. 0.1 *. ((!sigma /. 140.) -. 1.)));
+      if (level (Sdlvideo.get_pixel_color img x0 y0) < (int_of_float !seuil) &&
+	    x0 <> 0 && 
+	    y0 <> 0) then
+	Sdlvideo.put_pixel_color dst x0 y0 (0,0,0)
+      else
+	Sdlvideo.put_pixel_color dst x0 y0 (255,255,255)
     done
   done
-
+    
 (* Fonction d'application de matrice de convolution *)     
  let apply_matrix_convolution img dst mtx coeff w h =
    let r (r,g,b) = r and
