@@ -44,7 +44,7 @@ let img2bin img dst w h =
       sqrt_average := !sqrt_average /. 9.;
       variance := !sqrt_average -. !average *. !average;
       sigma := sqrt !variance; 
-      seuil := (!average *. (1. +. 0.1 *. ((!sigma /. 140.) -. 1.)));
+      seuil := (!average *. (1. +. 0.1 *. ((!sigma /. 100.) -. 1.)));
       if (level (Sdlvideo.get_pixel_color img x0 y0) < (int_of_float !seuil) &&
 	    x0 <> 0 && 
 	    y0 <> 0) then
@@ -56,51 +56,60 @@ let img2bin img dst w h =
     
 (* Fonction d'application de matrice de convolution *)     
  let apply_matrix_convolution img dst mtx coeff w h =
-   let r (r,g,b) = r and
-       g (r,g,b) = g and
-       b (r,g,b) = b and 
-       newR = ref 0 and
-       newG = ref 0 and
-       newB = ref 0 in
+   let r (r,g,b) = float r and
+       g (r,g,b) = float g and
+       b (r,g,b) = float b and 
+       newR = ref 0. and
+       newG = ref 0. and
+       newB = ref 0.  in
    for x0 = 1 to (w-1) do
-     for y0 = 1 to (h-1) do
+     for y0 = 1 to (h-1) do   
        for i = (-1) to 1 do
-	 for j = (-1) to 1 do
+	 for j = (-1) to 1 do	   
 	   if not ((x0+i) < 0 || (x0+i) > (w-1) || 
 		      (y0+j) < 0 || (y0+j) > (h-1)) then
 	     begin
-	       newR := !newR +
-		 (r (Sdlvideo.get_pixel_color img (x0+i) (y0+j)) *
-		    mtx.(i+1).(j+1));
-	       newG := !newG +
-		 (g (Sdlvideo.get_pixel_color img (x0+i) (y0+j)) *
-		    mtx.(i+1).(j+1));
-	       newB := !newB +
-		 (b (Sdlvideo.get_pixel_color img (x0+i) (y0+j)) *
-		    mtx.(i+1).(j+1));
+	       let color = Sdlvideo.get_pixel_color img (x0+i) (y0+j) in
+	       newR := !newR +. (r color) *. mtx.(i+1).(j+1);
+	       newG := !newG +. (g color) *. mtx.(i+1).(j+1);
+	       newB := !newB +. (b color) *. mtx.(i+1).(j+1);
 	     end
 	 done
        done;
-       newR := !newR / coeff;
-       newG := !newG / coeff;
-       newB := !newB / coeff;
-       Sdlvideo.put_pixel_color dst x0 y0 (!newR, !newG, !newB);
-       newR := 0;
-       newG := 0;
-       newB := 0;
+       newR := abs_float (!newR /. coeff);
+       newG := abs_float (!newG /. coeff);
+       newB := abs_float (!newB /. coeff);
+       if (!newR < 0.) then newR := 255.
+       else if (!newR > 255.) then newR := 255.;
+       if (!newG < 0.) then newG := 255.
+       else if (!newG > 255.) then newG := 255.;
+       if (!newB < 0.) then newB := 255.
+       else if (!newB > 255.) then newB := 255.;
+       Sdlvideo.put_pixel_color dst x0 y0 (truncate !newR, truncate !newG, truncate !newB);
+       newR := 0.;
+       newG := 0.;
+       newB := 0.;
      done
    done
      
 (* Filtre de Gauss *)
  let gauss_filter img dst w h =
-   let gauss_matrix = Array.make_matrix 3 3 1 in
-   gauss_matrix.(0).(1) <- 2;
-   gauss_matrix.(1).(0) <- 2;
-   gauss_matrix.(1).(1) <- 4;
-   gauss_matrix.(2).(1) <- 2;
-   gauss_matrix.(1).(2) <- 2;
-   apply_matrix_convolution img dst gauss_matrix 16 w h
+   let gauss_matrix = Array.make_matrix 3 3 1. in
+   gauss_matrix.(0).(1) <- 2.;
+   gauss_matrix.(1).(0) <- 2.;
+   gauss_matrix.(1).(1) <- 4.;
+   gauss_matrix.(2).(1) <- 2.;
+   gauss_matrix.(1).(2) <- 2.;
+   apply_matrix_convolution img dst gauss_matrix 16. w h
 
+ let contrast_filter img dst w h =
+   let c = Array.make_matrix 3 3 (0.) in
+   c.(0).(1) <- (-1.);
+   c.(1).(0) <- (-1.);
+   c.(1).(1) <- 5.;
+   c.(2).(1) <- (-1.);
+   c.(1).(2) <- (-1.);
+   apply_matrix_convolution img dst c 1. w h
 
 (* Binarisation finale *)
  let binarisation img dst w h =
@@ -109,10 +118,11 @@ let img2bin img dst w h =
        display = Sdlvideo.set_video_mode w h [`DOUBLEBUF] in
    Tools.show img display;
    Tools.wait_key ();
-   img2grey img s1 w h;
+   img2grey img img w h;
+   gauss_filter img s1 w h;
    Tools.show s1 display;
    Tools.wait_key ();
-   gauss_filter s1 s2 w h;
+   contrast_filter s1 s2 w h;
    Tools.show s2 display;
    Tools.wait_key ();
    img2bin s2 dst w h
