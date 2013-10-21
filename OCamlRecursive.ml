@@ -19,6 +19,7 @@ let main () =
 	dst = Sdlvideo.create_RGB_surface_format img [] w h in
     (* Application des differentes fonctions de traitement *)
     Binarisation.binarisation img dst w h;
+    Segmentation.get_text_zone dst w h;
     (* on affiche l'image *)
     Tools.show dst display;
     (* on attend une touche *)

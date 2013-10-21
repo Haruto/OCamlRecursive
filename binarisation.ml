@@ -125,4 +125,6 @@ let img2bin img dst w h =
    contrast_filter s1 s2 w h;
    Tools.show s2 display;
    Tools.wait_key ();
-   img2bin s2 dst w h
+   img2bin s2 dst w h;
+   Tools.show dst display;
+   Tools.wait_key ();
