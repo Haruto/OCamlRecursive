@@ -1,1 +1,3 @@
-OCR for EPITA's 2n year project
+UTILISATION DE l'OCR:
+./OCamlRecusrive.native [IMAGE]
+
