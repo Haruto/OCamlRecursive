@@ -44,7 +44,7 @@ let img2bin img dst w h =
       sqrt_average := !sqrt_average /. 9.;
       variance := !sqrt_average -. !average *. !average;
       sigma := sqrt !variance; 
-      seuil := (!average *. (1. +. 0.1 *. ((!sigma /. 100.) -. 1.)));
+      seuil := (!average *. (1. +. 0.05 *. ((!sigma /. 128.) -. 1.)));
       if (level (Sdlvideo.get_pixel_color img x0 y0) < (int_of_float !seuil) &&
 	    x0 <> 0 && 
 	    y0 <> 0) then
@@ -53,7 +53,9 @@ let img2bin img dst w h =
 	Sdlvideo.put_pixel_color dst x0 y0 (255,255,255)
     done
   done
-    
+ 
+
+ 
 (* Fonction d'application de matrice de convolution *)     
  let apply_matrix_convolution img dst mtx coeff w h =
    let r (r,g,b) = float r and
@@ -111,20 +113,11 @@ let img2bin img dst w h =
    c.(1).(2) <- (-1.);
    apply_matrix_convolution img dst c 1. w h
 
+
+
 (* Binarisation finale *)
  let binarisation img dst w h =
-   let s1 = Sdlvideo.create_RGB_surface_format img [] w h and
-       s2 = Sdlvideo.create_RGB_surface_format img [] w h and
-       display = Sdlvideo.set_video_mode w h [`DOUBLEBUF] in
-   Tools.show img display;
-   Tools.wait_key ();
+   let bin = Sdlvideo.create_RGB_surface_format img [] w h in
    img2grey img img w h;
-   gauss_filter img s1 w h;
-   Tools.show s1 display;
-   Tools.wait_key ();
-   contrast_filter s1 s2 w h;
-   Tools.show s2 display;
-   Tools.wait_key ();
-   img2bin s2 dst w h;
-   Tools.show dst display;
-   Tools.wait_key ();
+   gauss_filter img bin w h;
+   img2bin bin dst w h;

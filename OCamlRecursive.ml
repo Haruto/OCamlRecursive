@@ -16,17 +16,20 @@ let main () =
     (* On récupère les dimensions *)
     let (w,h) = get_dims img in
     (* On crée la surface d'arriver pour la binarisation *)
-   let bin = Sdlvideo.create_RGB_surface_format img [] w h in
+    let bin = Sdlvideo.create_RGB_surface_format img [] w h and 
+	dst_final = Sdlvideo.set_video_mode w h [`DOUBLEBUF] in
     (* Application des differentes fonctions de traitement *)
     Binarisation.binarisation img bin w h;
-    let alpha = Rotation.(hough_accu bin) in
+    (*let alpha = Rotation.(hough_accu bin) in
     let (dst1,newW,newH) = Rotation.(rotate bin alpha) in
     let dst_final = Sdlvideo.set_video_mode newW newH [`DOUBLEBUF] in
     Tools.show dst1 dst_final;
-    Tools.wait_key ();
-    Segmentation.get_text_zone dst1 w h;
+    Tools.wait_key ();*)
+    Segmentation.get_text_zone bin w h;
     (* on affiche l'image *)
-    Tools.show dst1 dst_final;
+    (*Tools.show dst1 dst_final;*)
+    Tools.show bin dst_final;
+    Sdlvideo.save_BMP bin "out.bmp";
     Tools.wait_key ();
     (* on quitte *)
     exit 0
