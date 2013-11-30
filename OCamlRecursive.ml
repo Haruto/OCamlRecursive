@@ -25,7 +25,7 @@ let main () =
     let dst_final = Sdlvideo.set_video_mode newW newH [`DOUBLEBUF] in
     Tools.show dst1 dst_final;
     Tools.wait_key ();
-    Segmentation.get_text_zone dst1 newW newH;
+    (*Segmentation.get_text_zone dst1 newW newH;*)
     (* on affiche l'image *)
     Tools.show dst1 dst_final;
     Sdlvideo.save_BMP bin "out.bmp";

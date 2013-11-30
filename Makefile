@@ -1,14 +1,13 @@
-# Binarisation
+# OCamlRecursive
  
-OCAML=ocamlopt
-OCAMLFLAGS= -I +sdl
-OCAMLLD= bigarray.cmxa sdl.cmxa sdlloader.cmxa
+OCAML=ocamlbuild
+OCAMLFLAGS= -use-ocamlfind
  
-binarisation: binarisation.ml
-	${OCAML} ${OCAMLFLAGS} ${OCAMLLD} -o binarisation binarisation.ml
+all:
+	${OCAML} ${OCAMLFLAGS} OCamlRecursive.native
  
 clean::
-	rm -f *~ *.o *.cm? binarisation *.native
+	rm -f *~ *.native
 	rm -f out.bmp
 	rm -r _build	
  
