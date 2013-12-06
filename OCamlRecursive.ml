@@ -3,7 +3,31 @@ let get_dims img =
   ((Sdlvideo.surface_info img).Sdlvideo.w, 
    (Sdlvideo.surface_info img).Sdlvideo.h)
 
- (* main *)
+let img_pretreatment img w h = 
+  let bin = Sdlvideo.create_RGB_surface_format img [] w h in
+
+  (* Application des differentes fonctions de traitement *)
+  print_endline "Binarisation...";
+  Binarisation.binarisation img bin w h;
+  print_endline "done";
+
+  print_endline "Rotation...";
+  let alpha = Rotation.(hough_accu bin) in
+  let (dst_rot,newW,newH) = Rotation.(rotate bin alpha) in
+  let (nw,ny,final_dst) = Zoom.(minw dst_rot) in
+  print_endline "done";
+
+  print_endline "Segmentation and extraction...";
+  (*Segmentation.get_text_zone dst1 newW newH;*)
+  print_endline "done";
+
+  let final_display = Sdlvideo.set_video_mode nw ny [`DOUBLEBUF] in
+  Tools.show final_dst final_display;
+  Tools.wait_key ();
+
+  (final_dst, final_display)
+    
+(* main *)
 let main () =
   begin
     (* Nous voulons 1 argument *)
@@ -15,21 +39,8 @@ let main () =
     let img = Sdlloader.load_image Sys.argv.(1) in
     (* On récupère les dimensions *)
     let (w,h) = get_dims img in
-    (* On crée la surface d'arriver pour la binarisation *)
-    let bin = Sdlvideo.create_RGB_surface_format img [] w h (*and 
-	dst_final = Sdlvideo.set_video_mode w h [`DOUBLEBUF]*) in
-    (* Application des differentes fonctions de traitement *)
-    Binarisation.binarisation img bin w h;
-    let alpha = Rotation.(hough_accu bin) in
-    let (dst1,newW,newH) = Rotation.(rotate bin alpha) in
-    (*let dst_final = Sdlvideo.set_video_mode newH newW [`DOUBLEBUF] in*)
-    let (nw,ny,dstout) = Zoom.(minw dst1) in
-    let display2 = Sdlvideo.set_video_mode nw ny [`DOUBLEBUF] in
-    Tools.show dstout display2;
-    Tools.wait_key ();
-    (*Segmentation.get_text_zone dst1 newW newH;*)
-    (* on affiche l'image *)
-    Sdlvideo.save_BMP dstout "out.bmp";
+    let (dst,display) = img_pretreatment img w h in
+    Sdlvideo.save_BMP dst "output.bmp";
     (* on quitte *)
     exit 0
   end
