@@ -8,7 +8,6 @@ all:
  
 clean::
 	rm -f *~ *.native
-	rm -f out.bmp
 	rm -r _build	
  
 # FIN

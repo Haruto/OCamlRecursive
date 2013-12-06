@@ -22,14 +22,14 @@ let main () =
     Binarisation.binarisation img bin w h;
     let alpha = Rotation.(hough_accu bin) in
     let (dst1,newW,newH) = Rotation.(rotate bin alpha) in
-    let dst_final = Sdlvideo.set_video_mode newW newH [`DOUBLEBUF] in
-    Tools.show dst1 dst_final;
+    (*let dst_final = Sdlvideo.set_video_mode newH newW [`DOUBLEBUF] in*)
+    let (nw,ny,dstout) = Zoom.(minw dst1) in
+    let display2 = Sdlvideo.set_video_mode nw ny [`DOUBLEBUF] in
+    Tools.show dstout display2;
     Tools.wait_key ();
     (*Segmentation.get_text_zone dst1 newW newH;*)
     (* on affiche l'image *)
-    Tools.show dst1 dst_final;
     Sdlvideo.save_BMP bin "out.bmp";
-    Tools.wait_key ();
     (* on quitte *)
     exit 0
   end
