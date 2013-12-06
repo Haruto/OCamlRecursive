@@ -29,7 +29,7 @@ let main () =
     Tools.wait_key ();
     (*Segmentation.get_text_zone dst1 newW newH;*)
     (* on affiche l'image *)
-    Sdlvideo.save_BMP bin "out.bmp";
+    Sdlvideo.save_BMP dstout "out.bmp";
     (* on quitte *)
     exit 0
   end
