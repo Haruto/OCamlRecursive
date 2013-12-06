@@ -43,7 +43,7 @@ let hough_accu img =
         maxA := !k -. 20.;
         maxV := m.(f2i(!k*.100.)).(rho);
        end;
-      k := !k+.0.01;
+      k := !k+.0.1;
      done;
     end;
     k := 0.;
