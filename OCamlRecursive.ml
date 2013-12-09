@@ -134,22 +134,29 @@ let img_pretreatment img w h =
   print_endline "Binarisation...";
   Binarisation.binarisation img bin w h;
   print_endline "done";
+  let bindis = Sdlvideo.set_video_mode w h [`DOUBLEBUF] in
+  Tools.show bin bindis;
+  Tools.wait_key ();
 
   print_endline "Rotation...";
   let alpha = Rotation.(hough_accu bin) in
   let (dst_rot,newW,newH) = Rotation.(rotate bin alpha) in
   let (nw,ny,final_dst) = Zoom.(minw dst_rot) in
   print_endline "done";
-
-  print_endline "Segmentation and extraction...";
-  (*Segmentation.get_text_zone dst1 newW newH;*)
-  print_endline "done";
-
   let final_display = Sdlvideo.set_video_mode nw ny [`DOUBLEBUF] in
   Tools.show final_dst final_display;
   Tools.wait_key ();
+  print_endline "Segmentation and extraction...";
+  let matr = Segmentation.img2matrix final_dst nw ny in
+  Segmentation.draw_carac matr nw ny;
+  let dst = Segmentation.matrix2img matr nw ny in
+  print_endline "done";
 
-  (final_dst, final_display)
+  let final_display = Sdlvideo.set_video_mode nw ny [`DOUBLEBUF] in
+  Tools.show dst final_display;
+  Tools.wait_key ();
+
+  (dst, final_display)
  
     
 let xor_test () =
@@ -164,16 +171,24 @@ let xor_test () =
     [|0.;1.;1.;0.|] 0.8;
      
       xor#layer_update [|0.;0.|];
-      Printf.printf "\n XOR 0/0 -> %f\n\n" (((xor#get_layers).(1))#get_output_neuron).(0);
+      print_endline " XOR 0/0 -> "; 
+      print_float (((xor#get_layers).(1))#get_output_neuron).(0);
+      print_newline ();
 
       xor#layer_update [|0.;1.|];
-      Printf.printf "\n XOR 0/1 -> %f\n\n" (((xor#get_layers).(1))#get_output_neuron).(0);
+      print_endline " XOR 0/1 -> "; 
+      print_float (((xor#get_layers).(1))#get_output_neuron).(0);
+      print_newline ();
 
       xor#layer_update [|1.;0.|];
-      Printf.printf "\n XOR 1/0 -> %f\n\n" (((xor#get_layers).(1))#get_output_neuron).(0);
+      print_endline " XOR 1/0 -> "; 
+      print_float (((xor#get_layers).(1))#get_output_neuron).(0);
+      print_newline ();
 
       xor#layer_update [|1.;1.|];
-      Printf.printf "\n XOR 1/1 -> %f\n\n" (((xor#get_layers).(1))#get_output_neuron).(0)
+      print_endline " XOR 1/1 -> "; 
+      print_float (((xor#get_layers).(1))#get_output_neuron).(0);
+      print_newline ()
     
 (* main *)
 let main () =
@@ -202,12 +217,13 @@ let _ =
     end
   else    
       match (Sys.argv.(1)) with
-  | "-a" -> 
-    begin
+      | "-xor" -> xor_test ()
+      | "-a" -> 
+	begin
       let img = Sdlloader.load_image (Sys.argv.(2)) in
       let (w,h) = get_dims img in
       let (dst,display) = img_pretreatment img w h in
       Sdlvideo.save_BMP dst "output.bmp";
-    end
-  | "-h" -> print_string "USE : ./OCamlRecursive [-a img]"
+	end
+      | "-h" -> print_string "USE : ./OCamlRecursive [-a img]"
 	

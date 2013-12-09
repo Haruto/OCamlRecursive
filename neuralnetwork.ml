@@ -3,7 +3,6 @@ object (self)
   val mutable weights:float array = 
     Array.make (nbentries+1) (Random.float 1.)
   val mutable output:float = 0.
-  val threshold:float = 0.5
   val mutable delta = 0.5
 
   method sigmoidale x = 1. /. (1. +. (exp (x *. -1.)))
@@ -23,7 +22,7 @@ object (self)
 	  else
 	    aux := !aux +. weights.(i) *. tab_entries.(i)
 	done;
-      output <- 1./.(1.+.exp(-.(!aux)))
+      output <- self#sigmoidale !aux
     end    
 end
   
@@ -56,7 +55,7 @@ object (self)
 	  lay
       )
       nbneurons_tab
-  val mutable delta = 0.1
+  val mutable delta = 0.5
   val mutable error = 1.
 
   method get_layers = layers
@@ -75,7 +74,7 @@ object (self)
    method learn tab_examples tab_out learn_rate =
     let total_error = ref 1. in
     (*while (!total_error > 0.1) do*)
-    for t = 0 to 100000 do
+    for t = 0 to 1000 do
       let nb_examples = (Array.length tab_examples) in
       for i = 0 to nb_examples-1 do
 	self#layer_update tab_examples.(i);
@@ -103,7 +102,7 @@ object (self)
 	      end;
 	  done;
 	  for l = 0 to (Array.length layers.(nb_layers-1)#get_neuron)-1 do
-	    if j>0 then
+	    (*if j>0 then*)
 	      begin
 		let diff = tab_out.(i) -. (layers.(nb_layers-1)#get_neuron.(l)#get_output) in
 		self#set_error ((error +. diff *. diff ) /. 2.)
