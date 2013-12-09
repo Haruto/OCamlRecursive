@@ -150,6 +150,7 @@ let img_pretreatment img w h =
   Tools.wait_key ();
 
   (final_dst, final_display)
+ 
     
 let xor_test () =
   let xor = new Neuralnetwork.network 2 [|3;1|] in
@@ -193,11 +194,20 @@ let main () =
   end
  
 let _ = 
-    if ((Sys.argv).(1) = "xor") then
-      xor_test ()
-    else
-      begin
-	window#event#connect#delete confirm;
-	window#show ();
-	GMain.main ()
-      end
+  if (Array.length (Sys.argv) < 2) then
+    begin
+      window#event#connect#delete confirm;
+      window#show ();
+      GMain.main ()
+    end
+  else    
+      match (Sys.argv.(1)) with
+  | "-a" -> 
+    begin
+      let img = Sdlloader.load_image (Sys.argv.(2)) in
+      let (w,h) = get_dims img in
+      let (dst,display) = img_pretreatment img w h in
+      Sdlvideo.save_BMP dst "output.bmp";
+    end
+  | "-h" -> print_string "USE : ./OCamlRecursive [-a img]"
+	
