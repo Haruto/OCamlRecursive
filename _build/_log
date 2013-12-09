@@ -1,0 +1,30 @@
+### Starting build.
+# Target: OCamlRecursive.ml.depends, tags: { extension:ml, file:OCamlRecursive.ml, ocaml, ocamldep, package(sdl), package(sdl.sdlimage), quiet, traverse }
+/usr/local/bin/ocamlfind ocamldep -package sdl -package sdl.sdlimage -modules OCamlRecursive.ml > OCamlRecursive.ml.depends # cached
+# Target: binarisation.ml.depends, tags: { extension:ml, file:binarisation.ml, ocaml, ocamldep, package(sdl), package(sdl.sdlimage), quiet, traverse }
+/usr/local/bin/ocamlfind ocamldep -package sdl -package sdl.sdlimage -modules binarisation.ml > binarisation.ml.depends # cached
+# Target: binarisation.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:binarisation.cmo, file:binarisation.ml, implem, ocaml, package(sdl), package(sdl.sdlimage), quiet, traverse }
+/usr/local/bin/ocamlfind ocamlc -c -package sdl -package sdl.sdlimage -o binarisation.cmo binarisation.ml # cached
+# Target: neuralnetwork.ml.depends, tags: { extension:ml, file:neuralnetwork.ml, ocaml, ocamldep, package(sdl), package(sdl.sdlimage), quiet, traverse }
+/usr/local/bin/ocamlfind ocamldep -package sdl -package sdl.sdlimage -modules neuralnetwork.ml > neuralnetwork.ml.depends # cached
+# Target: neuralnetwork.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:neuralnetwork.cmo, file:neuralnetwork.ml, implem, ocaml, package(sdl), package(sdl.sdlimage), quiet, traverse }
+/usr/local/bin/ocamlfind ocamlc -c -package sdl -package sdl.sdlimage -o neuralnetwork.cmo neuralnetwork.ml # cached
+# Target: rotation.ml.depends, tags: { extension:ml, file:rotation.ml, ocaml, ocamldep, package(sdl), package(sdl.sdlimage), quiet, traverse }
+/usr/local/bin/ocamlfind ocamldep -package sdl -package sdl.sdlimage -modules rotation.ml > rotation.ml.depends # cached
+# Target: rotation.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:rotation.cmo, file:rotation.ml, implem, ocaml, package(sdl), package(sdl.sdlimage), quiet, traverse }
+/usr/local/bin/ocamlfind ocamlc -c -package sdl -package sdl.sdlimage -o rotation.cmo rotation.ml # cached
+# Target: tools.ml.depends, tags: { extension:ml, file:tools.ml, ocaml, ocamldep, package(sdl), package(sdl.sdlimage), quiet, traverse }
+/usr/local/bin/ocamlfind ocamldep -package sdl -package sdl.sdlimage -modules tools.ml > tools.ml.depends # cached
+# Target: tools.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:tools.cmo, file:tools.ml, implem, ocaml, package(sdl), package(sdl.sdlimage), quiet, traverse }
+/usr/local/bin/ocamlfind ocamlc -c -package sdl -package sdl.sdlimage -o tools.cmo tools.ml # cached
+# Target: zoom.ml.depends, tags: { extension:ml, file:zoom.ml, ocaml, ocamldep, package(sdl), package(sdl.sdlimage), quiet, traverse }
+/usr/local/bin/ocamlfind ocamldep -package sdl -package sdl.sdlimage -modules zoom.ml > zoom.ml.depends # cached
+# Target: zoom.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:zoom.cmo, file:zoom.ml, implem, ocaml, package(sdl), package(sdl.sdlimage), quiet, traverse }
+/usr/local/bin/ocamlfind ocamlc -c -package sdl -package sdl.sdlimage -o zoom.cmo zoom.ml # cached
+# Target: OCamlRecursive.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:OCamlRecursive.cmo, file:OCamlRecursive.ml, implem, ocaml, package(sdl), package(sdl.sdlimage), quiet, traverse }
+/usr/local/bin/ocamlfind ocamlc -c -package sdl -package sdl.sdlimage -o OCamlRecursive.cmo OCamlRecursive.ml
++ /usr/local/bin/ocamlfind ocamlc -c -package sdl -package sdl.sdlimage -o OCamlRecursive.cmo OCamlRecursive.ml
+File "OCamlRecursive.ml", line 7, characters 1-11:
+Error: Unbound module GMain
+Command exited with code 2.
+# Compilation unsuccessful.
