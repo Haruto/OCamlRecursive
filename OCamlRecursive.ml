@@ -27,6 +27,29 @@ let img_pretreatment img w h =
 
   (final_dst, final_display)
     
+let xor_test () =
+  let xor = new Neuralnetwork.network 2 [|3;1|] in
+  xor#learn
+    [| 
+      [|0.;0.|];
+      [|0.;1.|];
+      [|1.;0.|];
+      [|1.;1.|]
+    |]
+    [|0.;1.;1.;0.|] 0.8;
+     
+      xor#layer_update [|0.;0.|];
+      Printf.printf "\n XOR 0/0 -> %f\n\n" (((xor#get_layers).(1))#get_output_neuron).(0);
+
+      xor#layer_update [|0.;1.|];
+      Printf.printf "\n XOR 0/1 -> %f\n\n" (((xor#get_layers).(1))#get_output_neuron).(0);
+
+      xor#layer_update [|1.;0.|];
+      Printf.printf "\n XOR 1/0 -> %f\n\n" (((xor#get_layers).(1))#get_output_neuron).(0);
+
+      xor#layer_update [|1.;1.|];
+      Printf.printf "\n XOR 1/1 -> %f\n\n" (((xor#get_layers).(1))#get_output_neuron).(0)
+    
 (* main *)
 let main () =
   begin
@@ -36,13 +59,17 @@ let main () =
     (* Initialisation de SDL *)
     Tools.sdl_init ();
     (* Chargement d'une image *)
-    let img = Sdlloader.load_image Sys.argv.(1) in
-    (* On récupère les dimensions *)
-    let (w,h) = get_dims img in
-    let (dst,display) = img_pretreatment img w h in
-    Sdlvideo.save_BMP dst "output.bmp";
-    (* on quitte *)
-    exit 0
+    if ((Sys.argv).(1) = "xor") then
+      xor_test ()
+    else
+      let img = Sdlloader.load_image Sys.argv.(1) in
+      (* On récupère les dimensions *)
+      let (w,h) = get_dims img in
+      let (dst,display) = img_pretreatment img w h in
+      Sdlvideo.save_BMP dst "output.bmp";
+      (* on quitte *)
+      exit 0
   end
  
-let _ = main ()
+let _ = 
+    main ()
